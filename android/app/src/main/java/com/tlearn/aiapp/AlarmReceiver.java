@@ -1,0 +1,15 @@
+package com.tlearn.aiapp;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+
+public class AlarmReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Log.d("TLearn", "AlarmReceiver onReceive: " + intent.getAction());
+        // Placeholder: In a full implementation, you could reschedule alarms here if needed
+    }
+}
+

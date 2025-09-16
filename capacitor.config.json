@@ -1,0 +1,19 @@
+{
+  "appId": "com.tlearn.aiapp",
+  "appName": "T-learn",
+  "webDir": "build",
+  "bundledWebRuntime": false,
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon_config_sample",
+      "iconColor": "#488AFF",
+      "sound": "alarm327234.mp3"
+    }
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}
