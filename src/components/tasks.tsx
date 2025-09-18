@@ -225,7 +225,7 @@ export function Tasks({ onBack }: TasksProps) {
     return () => clearInterval(interval);
   }, [tasks]);
 
-  const createTask = () => {
+  const createTask = async () => {
     if (!newTask.title.trim()) {
       alert('Vui lòng nhập tiêu đề nhiệm vụ!');
       return;
@@ -258,12 +258,12 @@ export function Tasks({ onBack }: TasksProps) {
     });
     setIsCreateDialogOpen(false);
     // 🔔 Thông báo ngay khi tạo
-    sendNotification("Đã tạo nhiệm vụ thành công ✅", `Nhiệm vụ: ${task.title}`);
+    await sendNotification("Đã tạo nhiệm vụ thành công ✅", `Nhiệm vụ: ${task.title}`);
 
     // 🔔 Đặt lịch nhắc trước hạn chót 3 giờ
     const reminderTime = new Date(task.dueDate.getTime() - 3*60 * 60 * 1000);
     if (reminderTime > new Date()) {
-      sendNotification("Sắp đến hạn ⏰", `Nhiệm vụ "${task.title}" còn 3 giờ nữa!`, reminderTime);
+      await sendNotification("Sắp đến hạn ⏰", `Nhiệm vụ "${task.title}" còn 3 giờ nữa!`, reminderTime);
     }
   };
 
@@ -603,4 +603,4 @@ export function Tasks({ onBack }: TasksProps) {
       </div>
     </div>
   );
-}
+} 

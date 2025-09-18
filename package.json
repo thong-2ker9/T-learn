@@ -2,7 +2,7 @@
       "name": "AI-Powered Study Assistant App",
       "version": "0.1.0",
       "private": true,
-      "homepage": "https://github.com/khoahung2k2-star/",
+      "homepage": "https://khoahung2k2-star.github.io/T-learn/",
       "dependencies": {
             "@capacitor-community/media": "^8.0.1",
             "@capacitor-community/text-to-speech": "^6.0.0",
@@ -40,11 +40,15 @@
             "class-variance-authority": "^0.7.1",
             "clsx": "*",
             "cmdk": "^1.1.1",
+            "docx-preview": "^0.3.6",
             "embla-carousel-react": "^8.6.0",
             "framer-motion": "^12.23.12",
             "input-otp": "^1.4.2",
             "lucide-react": "^0.487.0",
+            "mammoth": "^1.10.0",
             "next-themes": "^0.4.6",
+            "pdf-parse": "^1.1.1",
+            "pdfjs-dist": "^4.8.69",
             "react": "^18.3.1",
             "react-day-picker": "^8.10.1",
             "react-dom": "^18.3.1",
@@ -54,11 +58,13 @@
             "recharts": "^2.15.2",
             "sonner": "^2.0.3",
             "tailwind-merge": "*",
-            "vaul": "^1.1.2"
+            "vaul": "^1.1.2",
+            "youtube-transcript": "^1.2.1"
       },
       "devDependencies": {
             "@tailwindcss/postcss": "^4.1.13",
             "@types/node": "^20.10.0",
+            "@types/pdf-parse": "^1.1.5",
             "@vitejs/plugin-react-swc": "^3.10.2",
             "autoprefixer": "^10.4.21",
             "gh-pages": "^6.3.0",
@@ -67,8 +73,10 @@
             "vite": "^6.3.6"
       },
       "scripts": {
+            "start": "react-scripts start",
             "dev": "vite",
             "predeploy": "npm run build",
+            "preview": "vite preview",
             "deploy": "gh-pages -d build",
             "build": "vite build"
       }

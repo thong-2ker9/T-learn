@@ -5,6 +5,7 @@
 
   export default defineConfig({
     plugins: [react()],
+    base: "/T-learn/", // 👈 thêm dòng này
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {

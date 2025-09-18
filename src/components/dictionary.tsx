@@ -11,7 +11,6 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
 
 
-
 interface DictionaryProps {
   onBack: () => void;
 }
@@ -212,7 +211,7 @@ export function Dictionary({ onBack }: DictionaryProps) {
       toast.success("Đã tìm thấy từ!");
     } catch (err) {
       console.error(err);
-      toast.error("Có lỗi xảy ra khi gọi Gemini API!");
+      toast.error("Có lỗi xảy ra,vui lòng thử lại!");
     }
 
     setIsLoading(false);
@@ -281,8 +280,21 @@ export function Dictionary({ onBack }: DictionaryProps) {
   };
 
         // Hàm phát âm bằng TTSOpenAI
+    // Hàm phát âm bằng TTS
+    // Hàm phát âm được sửa lỗi
+    // Hàm phát âm được sửa lỗi
+    // Hàm phát âm được sửa lỗi
     const handlePlayAudio = async (lang: "en" | "vi") => {
       if (!result) return;
+
+      // 🟢 Text cần đọc
+      let textToRead = "";
+      if (lang === "en") {
+        textToRead = sourceLanguage === "en" ? result.word : result.meaning || result.word;
+      } else {
+        textToRead = sourceLanguage === "vi" ? result.word : result.meaning;
+      }
+
 
       // ✅ Kiểm tra có đang chạy trong app (Android/iOS) hay web
       const isNative = (window as any).Capacitor?.isNativePlatform?.();
@@ -291,8 +303,8 @@ export function Dictionary({ onBack }: DictionaryProps) {
         // 🔊 Native TTS cho Android/iOS
         try {
           await TextToSpeech.speak({
-            text: result.word, // từ cần đọc
-            lang: lang === "en" ? "en-US" : "vi-VN", // chọn giọng
+            text: textToRead,
+            lang: lang === "en" ? "en-US" : "vi-VN",
             rate: 1.0,
             pitch: 1.0,
             volume: 1.0,
@@ -308,7 +320,7 @@ export function Dictionary({ onBack }: DictionaryProps) {
           if (speechSynthesis.speaking) {
             speechSynthesis.cancel();
           }
-          const utter = new SpeechSynthesisUtterance(result.word);
+          const utter = new SpeechSynthesisUtterance(textToRead);
           utter.lang = lang === "en" ? "en-US" : "vi-VN";
           utter.rate = 1;
           utter.pitch = 1;

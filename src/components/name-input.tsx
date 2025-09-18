@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Card } from "./ui/card";
 import { User, ArrowRight } from "lucide-react";
+import { EducationalBackground } from "./educational-background";
 
 interface NameInputProps {
   onNameSubmit: (name: string) => void;
@@ -20,8 +21,9 @@ export function NameInput({ onNameSubmit }: NameInputProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-blue-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-8 bg-white/90 backdrop-blur-sm shadow-2xl border-2 border-red-200">
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
+      <EducationalBackground variant="secondary" />
+      <Card className="relative z-10 w-full max-w-md p-8 bg-white/95 backdrop-blur-md shadow-2xl border-2 border-red-200">
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <User className="w-10 h-10 text-white" />
