@@ -7,8 +7,7 @@ import { Badge } from "./ui/badge";
 import { Switch } from "./ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Plus, Trash2, Shirt, Sun, Moon, Edit } from "lucide-react";
-import { Capacitor } from "@capacitor/core";
-import { LocalNotifications } from "@capacitor/local-notifications";
+import { toast } from "sonner";
 
 interface UniformRule {
   id: string;
@@ -38,49 +37,10 @@ export function Uniform({ onBack }: UniformProps) {
     description: "",
     color: "#ef4444"
   });
-  const sendNotification = async (title: string, body: string, at?: Date) => {
-    const platform = Capacitor.getPlatform();
-    if (platform === "web") {
-      try {
-        if (typeof Notification !== "undefined") {
-          if (Notification.permission === "granted") {
-            new Notification(title, { body });
-          } else if (Notification.permission === "default") {
-            await Notification.requestPermission();
-          }
-        }
-      } catch (e) {
-        console.warn("Web Notification failed:", e);
-      }
-    } else {
-      try {
-         LocalNotifications.requestPermissions();
-         LocalNotifications.schedule({
-          notifications: [
-            {
-              id: Date.now(),
-              title,
-              body,
-              schedule: at ? { at } : undefined,
-            }
-          ]
-        });
-      } catch (e) {
-        console.warn("LocalNotifications.schedule failed:", e);
-      }
-    }
-  };
-
-  const [editRule, setEditRule] = useState<{
-    name: string;
-    dayOfWeek: number[];
-    session: 'morning' | 'afternoon' | 'both';
-    description: string;
-    color: string;
-  }>({
+  const [editRule, setEditRule] = useState({
     name: "",
     dayOfWeek: [] as number[],
-    session: "both",
+    session: "both" as const,
     description: "",
     color: "#ef4444"
   });
@@ -162,65 +122,47 @@ export function Uniform({ onBack }: UniformProps) {
   }, [rules]);
 
   // Check for uniform reminders
-// Nhắc nhở trước 4 tiếng cho ngày mai
   useEffect(() => {
-    const scheduleUniformReminders = async () => {
+    const checkUniformReminders = () => {
       const now = new Date();
-      const tomorrow = new Date(now);
-      tomorrow.setDate(now.getDate() + 1);
-      const tomorrowDay = tomorrow.getDay();
+      const currentDay = now.getDay();
+      const currentHour = now.getHours();
+      
+      // Morning reminder (6:30 AM)
+      const isMorningReminderTime = currentHour === 6 && now.getMinutes() === 30;
+      // Afternoon reminder (12:00 PM)
+      const isAfternoonReminderTime = currentHour === 12 && now.getMinutes() === 0;
 
-      for (const rule of rules) {
-        if (!rule.enabled || !rule.dayOfWeek.includes(tomorrowDay)) continue;
+      rules.forEach(rule => {
+        if (!rule.enabled || !rule.dayOfWeek.includes(currentDay)) return;
 
-        // Buổi sáng
-        if (rule.session === "morning" || rule.session === "both") {
-          const morningTime = new Date(tomorrow);
-          morningTime.setHours(6, 30, 0, 0); // 6:30 sáng
-          morningTime.setHours(morningTime.getHours() - 4); // Trừ 4 tiếng
-          if (morningTime > now) {
-             sendNotification(
-              "👔 Nhắc nhở đồng phục buổi sáng",
-              `Ngày mai cần mặc: ${rule.name} - ${rule.description}`,
-              morningTime
-            );
-          }
+        let shouldNotify = false;
+        let session = '';
+
+        if (isMorningReminderTime && (rule.session === 'morning' || rule.session === 'both')) {
+          shouldNotify = true;
+          session = 'buổi sáng';
+        } else if (isAfternoonReminderTime && (rule.session === 'afternoon' || rule.session === 'both')) {
+          shouldNotify = true;
+          session = 'buổi chiều';
         }
 
-        // Buổi chiều
-        if (rule.session === "afternoon" || rule.session === "both") {
-          const afternoonTime = new Date(tomorrow);
-          afternoonTime.setHours(12, 0, 0, 0); // 12h trưa
-          afternoonTime.setHours(afternoonTime.getHours() - 4); // Trừ 4 tiếng
-          if (afternoonTime > now) {
-             sendNotification(
-              "👔 Nhắc nhở đồng phục buổi chiều",
-              `Ngày mai cần mặc: ${rule.name} - ${rule.description}`,
-              afternoonTime
-            );
-          }
+        if (shouldNotify) {
+          showUniformNotification(rule, session);
         }
-      }
+      });
     };
 
-    const setupAndSchedule = async () => {
-      // Xin quyền thông báo
-      if (Capacitor.getPlatform() === "web") {
-        if (typeof Notification !== 'undefined' && Notification.permission === "default") {
-          await Notification.requestPermission();
-        }
-      } else {
-        try {
-          await LocalNotifications.requestPermissions();
-        } catch (e) {
-          console.warn("LocalNotifications.requestPermissions failed:", e);
-        }
-      }
+    // Check every minute
+    const interval = setInterval(checkUniformReminders, 60000);
+    checkUniformReminders(); // Initial check
 
-      await scheduleUniformReminders();
-    };
+    // Request notification permission
+    if (Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
 
-    setupAndSchedule();
+    return () => clearInterval(interval);
   }, [rules]);
 
   const showUniformNotification = (rule: UniformRule, session: string) => {
@@ -230,7 +172,7 @@ export function Uniform({ onBack }: UniformProps) {
     if (Notification.permission === 'granted') {
       new Notification(`👔 ${rule.name}`, {
         body: `Hôm nay ${session} cần mặc: ${rule.description}`,
-        icon: 'ic_stat_icon_config_sample'
+        icon: '/uniform-icon.png'
       });
     }
 
@@ -271,19 +213,48 @@ export function Uniform({ onBack }: UniformProps) {
       color: "#ef4444"
     });
     setIsCreateDialogOpen(false);
+    
+    // Show success toast
+    toast.success("👔 Quy tắc đồng phục đã được tạo!", {
+      description: `Quy tắc "${rule.name}" đã được thêm vào danh sách`,
+      duration: 3000,
+    });
   };
 
   const toggleRule = (id: string) => {
+    const rule = rules.find(r => r.id === id);
+    if (!rule) return;
+    
     setRules(prev => 
       prev.map(rule => 
         rule.id === id ? { ...rule, enabled: !rule.enabled } : rule
       )
     );
+    
+    // Show toast notification
+    if (!rule.enabled) {
+      toast.success("✅ Quy tắc đã được bật!", {
+        description: `"${rule.name}" đã được kích hoạt`,
+        duration: 2000,
+      });
+    } else {
+      toast.info("🔕 Quy tắc đã được tắt", {
+        description: `"${rule.name}" đã được vô hiệu hóa`,
+        duration: 2000,
+      });
+    }
   };
 
   const deleteRule = (id: string) => {
+    const rule = rules.find(r => r.id === id);
+    if (!rule) return;
+    
     if (confirm('Bạn có chắc chắn muốn xóa quy tắc này?')) {
       setRules(prev => prev.filter(rule => rule.id !== id));
+      toast.success("🗑️ Quy tắc đã được xóa", {
+        description: `"${rule.name}" đã được xóa khỏi danh sách`,
+        duration: 2000,
+      });
     }
   };
 
@@ -329,6 +300,12 @@ export function Uniform({ onBack }: UniformProps) {
     
     setIsEditDialogOpen(false);
     setEditingRule(null);
+    
+    // Show success toast
+    toast.success("✏️ Quy tắc đã được cập nhật!", {
+      description: `"${editRule.name}" đã được chỉnh sửa thành công`,
+      duration: 3000,
+    });
   };
 
   const toggleEditDay = (day: number) => {

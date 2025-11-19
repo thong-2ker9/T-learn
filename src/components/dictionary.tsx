@@ -6,7 +6,7 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { EducationalBackground } from "./educational-background";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
 
@@ -127,8 +127,8 @@ export function Dictionary({ onBack }: DictionaryProps) {
 
     // 2. Nếu không có thì gọi API online
     try {
-      const genAI = new GoogleGenerativeAI("AIzaSyBRFPXbiLH4gJS3bQ0Cy1Q1A8PAEz5Mxhw"); // 🔑 thay bằng key của bạn
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const genAI = new GoogleGenerativeAI("AIzaSyDrT9Bu5y4h50g63BEBn3-VCVhPev5pptw"); // 🔑 thay bằng key của bạn
+      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
       const result = await model.generateContent({
         contents: [

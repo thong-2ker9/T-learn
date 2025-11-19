@@ -4,11 +4,16 @@
   import path from 'path';
 
   export default defineConfig({
+    optimizeDeps: {
+    
+      exclude: ["pdfjs-dist"],
+  },
     plugins: [react()],
     base: "/T-learn/", // 👈 thêm dòng này
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {
+        asset: path.resolve(__dirname, 'src/assets'),
         'vaul@1.1.2': 'vaul',
         'sonner@2.0.3': 'sonner',
         'recharts@2.15.2': 'recharts',
