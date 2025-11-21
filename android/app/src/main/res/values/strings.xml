@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">T-learn</string>
-    <string name="title_activity_main">T-learn</string>
-    <string name="package_name">com.tlearn.aiapp</string>
-    <string name="custom_url_scheme">com.tlearn.aiapp</string>
-</resources>
